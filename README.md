@@ -9,6 +9,7 @@
 ![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black)
 ![Prometheus](https://img.shields.io/badge/Prometheus-Monitoring-E6522C?style=for-the-badge&logo=prometheus&logoColor=white)
 ![Grafana](https://img.shields.io/badge/Grafana-Dashboards-F46800?style=for-the-badge&logo=grafana&logoColor=white)
+![Jenkins](https://img.shields.io/badge/Jenkins-CI%2FCD-D24939?style=for-the-badge&logo=jenkins&logoColor=white)
 
 **A production-style, beginner-friendly DevOps project for learning Kubernetes, Docker, CI/CD, and Cloud Monitoring — all on AWS Free Tier.**
 
@@ -27,7 +28,7 @@ CloudPulse is a **full-stack monitoring platform** that demonstrates real-world 
 - **Docker** — Multi-stage containerized builds
 - **Kubernetes (k3s)** — Production-like cluster on a single EC2 instance
 - **Prometheus + Grafana** — Industry-standard monitoring stack
-- **GitHub Actions CI/CD** — Automated build, push, and deploy pipeline
+- **GitHub Actions + Jenkins CI/CD** — Automated build, push, and deploy pipelines
 - **AWS Free Tier** — Runs entirely on a t2.micro instance ($0/month)
 
 ---
@@ -69,7 +70,7 @@ AWS EC2 Instance (t2.micro, Ubuntu 22.04)
 | Containerization | Docker (multi-stage Alpine) | Package applications |
 | Orchestration | Kubernetes (k3s) | Container management |
 | Monitoring | Prometheus + Grafana | Metrics collection & visualization |
-| CI/CD | GitHub Actions | Automated deployment pipeline |
+| CI/CD | GitHub Actions + Jenkins | Automated deployment pipelines |
 | Cloud | AWS EC2 (Free Tier) | Infrastructure |
 | Ingress | Traefik (k3s built-in) | HTTP routing |
 
@@ -138,6 +139,7 @@ Follow the guides in order for a complete learning experience:
 | 11 | [Troubleshooting](docs/11-troubleshooting.md) | 20+ Common Issues & Fixes |
 | 12 | [Optimization](docs/12-optimization.md) | Image Size, Resources, Security |
 | 13 | [Interview Prep](docs/13-interview-prep.md) | 50+ DevOps Interview Q&A |
+| 14 | [Jenkins Setup](docs/14-jenkins-setup.md) | Jenkins Pipeline, Webhooks |
 
 ---
 
@@ -160,13 +162,13 @@ This project covers **every major DevOps interview topic**:
 - ✅ Docker containerization & multi-stage builds
 - ✅ Kubernetes deployments, services, ingress
 - ✅ Prometheus monitoring & Grafana dashboards
-- ✅ CI/CD pipelines with GitHub Actions
+- ✅ CI/CD pipelines with GitHub Actions & Jenkins
 - ✅ AWS cloud infrastructure (EC2, Security Groups)
 - ✅ Auto-scaling with HPA
 - ✅ Rolling updates & zero-downtime deployments
 
 **Resume bullet point:**
-> Built CloudPulse, a Kubernetes-based real-time monitoring platform with React dashboard, Express.js API, Prometheus/Grafana monitoring stack, and GitHub Actions CI/CD pipeline, deployed on AWS EC2 using k3s.
+> Built CloudPulse, a Kubernetes-based real-time monitoring platform with React dashboard, Express.js API, Prometheus/Grafana monitoring stack, and GitHub Actions + Jenkins CI/CD pipelines, deployed on AWS EC2 using k3s.
 
 See [docs/13-interview-prep.md](docs/13-interview-prep.md) for 50+ interview questions with answers.
 
@@ -184,7 +186,8 @@ CloudPulse/
 │   ├── monitoring/     # Prometheus & Grafana
 │   ├── ingress/        # Traefik ingress rules
 │   └── scaling/        # HPA auto-scaling
-├── .github/workflows/  # CI/CD pipeline
+├── .github/workflows/  # GitHub Actions CI/CD
+├── Jenkinsfile         # Jenkins CI/CD pipeline
 ├── scripts/            # Setup & deploy scripts
 ├── docs/               # Step-by-step guides
 └── docker-compose.yaml # Local development
