@@ -52,7 +52,7 @@ pipeline {
                 stage('Backend') {
                     steps {
                         dir('backend') {
-                            sh 'npm ci'
+                            sh 'npm install'
                             echo '✅ Backend dependencies installed'
                         }
                     }
@@ -60,7 +60,7 @@ pipeline {
                 stage('Frontend') {
                     steps {
                         dir('frontend') {
-                            sh 'npm ci'
+                            sh 'npm install'
                             sh 'REACT_APP_API_URL="" npm run build'
                             echo '✅ Frontend built successfully'
                         }
