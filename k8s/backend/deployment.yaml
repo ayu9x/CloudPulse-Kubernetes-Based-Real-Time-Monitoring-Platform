@@ -1,0 +1,95 @@
+# ============================================================
+# CloudPulse Backend — Deployment
+# ============================================================
+# A Deployment manages a set of identical Pods (replicas).
+# It ensures the desired number of pods are always running.
+# If a pod crashes, the Deployment automatically creates a new one.
+#
+# Key concepts:
+# - replicas: How many copies of your app to run
+# - selector: How the Deployment finds its Pods
+# - template: The Pod specification (what container to run)
+# - resources: CPU/memory limits to prevent one pod from hogging everything
+# - probes: Health checks that tell K8s if your app is alive and ready
+# ============================================================
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudpulse-backend
+  namespace: cloudpulse
+  labels:
+    app: cloudpulse
+    component: backend
+spec:
+  # Run 2 replicas for high availability
+  # If one pod crashes, the other keeps serving traffic
+  replicas: 2
+  
+  # How the Deployment finds its Pods
+  selector:
+    matchLabels:
+      app: cloudpulse
+      component: backend
+  
+  # Rolling update strategy — zero downtime deployments
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1        # Create 1 new pod before killing old ones
+      maxUnavailable: 0   # Never have 0 available pods during update
+  
+  template:
+    metadata:
+      labels:
+        app: cloudpulse
+        component: backend
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+        - name: backend
+          # Replace with your Docker Hub username
+          image: YOUR_DOCKERHUB_USERNAME/cloudpulse-backend:latest
+          
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          
+          # Load environment variables from ConfigMap
+          envFrom:
+            - configMapRef:
+                name: backend-config
+          
+          # Resource limits — CRITICAL for t2.micro (1GB RAM)
+          resources:
+            requests:
+              memory: "64Mi"    # Minimum memory guaranteed
+              cpu: "50m"        # 50 millicores = 5% of 1 CPU
+            limits:
+              memory: "128Mi"   # Maximum memory allowed
+              cpu: "100m"       # 100 millicores = 10% of 1 CPU
+          
+          # Liveness Probe — "Is the pod alive?"
+          # If this fails 3 times, K8s restarts the pod
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            timeoutSeconds: 3
+            failureThreshold: 3
+          
+          # Readiness Probe — "Can the pod handle traffic?"
+          # If this fails, K8s removes the pod from the Service endpoints
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3

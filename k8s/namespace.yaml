@@ -1,0 +1,15 @@
+# ============================================================
+# CloudPulse — Kubernetes Namespace
+# ============================================================
+# A Namespace is like a virtual cluster inside your real cluster.
+# It isolates CloudPulse resources from other applications.
+# Think of it as a folder for your Kubernetes objects.
+# ============================================================
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cloudpulse
+  labels:
+    app: cloudpulse
+    environment: production

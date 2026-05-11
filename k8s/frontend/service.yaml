@@ -1,0 +1,22 @@
+# ============================================================
+# CloudPulse Frontend — Service
+# ============================================================
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: cloudpulse-frontend
+  namespace: cloudpulse
+  labels:
+    app: cloudpulse
+    component: frontend
+spec:
+  type: ClusterIP
+  selector:
+    app: cloudpulse
+    component: frontend
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+      protocol: TCP

@@ -1,0 +1,52 @@
+# ============================================================
+# Prometheus — Configuration (ConfigMap)
+# ============================================================
+# This ConfigMap contains the prometheus.yml configuration file.
+# It tells Prometheus WHAT to scrape, HOW OFTEN, and WHERE.
+# ============================================================
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  namespace: cloudpulse
+  labels:
+    app: cloudpulse
+    component: prometheus
+data:
+  prometheus.yml: |
+    # Global configuration
+    global:
+      scrape_interval: 15s       # How often to scrape targets
+      evaluation_interval: 15s   # How often to evaluate alerting rules
+
+    # Scrape configurations
+    scrape_configs:
+      # ----- CloudPulse Backend -----
+      # Scrapes the /metrics endpoint of the backend service
+      - job_name: 'cloudpulse-backend'
+        kubernetes_sd_configs:
+          - role: pod
+            namespaces:
+              names:
+                - cloudpulse
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+            action: keep
+            regex: true
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+            action: replace
+            target_label: __metrics_path__
+            regex: (.+)
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_port, __meta_kubernetes_pod_ip]
+            action: replace
+            regex: (\d+);([\d\.]+)
+            replacement: $2:$1
+            target_label: __address__
+
+      # ----- Static Backend Target (Fallback) -----
+      - job_name: 'cloudpulse-backend-static'
+        static_configs:
+          - targets: ['cloudpulse-backend.cloudpulse.svc:8080']
+        metrics_path: '/metrics'
+        scrape_interval: 10s

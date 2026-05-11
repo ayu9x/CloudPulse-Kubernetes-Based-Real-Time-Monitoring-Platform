@@ -1,0 +1,61 @@
+# ============================================================
+# CloudPulse — Ingress
+# ============================================================
+# An Ingress routes external HTTP traffic to internal Services.
+# Think of it as a smart reverse proxy / load balancer.
+#
+# Without Ingress: You'd need separate NodePorts for each service
+#   - Frontend: http://EC2_IP:30001
+#   - Backend:  http://EC2_IP:30002
+#   - Grafana:  http://EC2_IP:30003
+#
+# With Ingress: Everything goes through port 80
+#   - http://EC2_IP/          → Frontend
+#   - http://EC2_IP/api       → Backend
+#   - http://EC2_IP/grafana   → Grafana
+#
+# k3s comes with Traefik Ingress Controller pre-installed!
+# ============================================================
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: cloudpulse-ingress
+  namespace: cloudpulse
+  labels:
+    app: cloudpulse
+  annotations:
+    # Traefik (k3s default) annotations
+    kubernetes.io/ingress.class: traefik
+    # Increase body size limit for larger requests
+    traefik.ingress.kubernetes.io/buffering: "true"
+spec:
+  rules:
+    - http:
+        paths:
+          # Backend API — /api/* routes
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: cloudpulse-backend
+                port:
+                  number: 8080
+          
+          # Prometheus metrics endpoint
+          - path: /metrics
+            pathType: Exact
+            backend:
+              service:
+                name: cloudpulse-backend
+                port:
+                  number: 8080
+          
+          # Frontend — catch-all (must be last)
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: cloudpulse-frontend
+                port:
+                  number: 80

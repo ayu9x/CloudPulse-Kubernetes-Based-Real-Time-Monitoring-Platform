@@ -1,0 +1,89 @@
+# ============================================================
+# CloudPulse — Docker Compose (Local Development)
+# ============================================================
+# Run all services locally without Kubernetes.
+# Usage: docker-compose up --build
+# ============================================================
+
+version: '3.8'
+
+services:
+  # ----- Backend API -----
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: cloudpulse-backend
+    ports:
+      - "8080:8080"
+    environment:
+      - NODE_ENV=development
+      - PORT=8080
+      - LOG_LEVEL=info
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8080/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - cloudpulse
+
+  # ----- Frontend Dashboard -----
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: cloudpulse-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - cloudpulse
+
+  # ----- Prometheus -----
+  prometheus:
+    image: prom/prometheus:v2.50.1
+    container_name: cloudpulse-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=7d'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+    networks:
+      - cloudpulse
+
+  # ----- Grafana -----
+  grafana:
+    image: grafana/grafana:10.4.1
+    container_name: cloudpulse-grafana
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=cloudpulse123
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+    networks:
+      - cloudpulse
+
+volumes:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  cloudpulse:
+    driver: bridge

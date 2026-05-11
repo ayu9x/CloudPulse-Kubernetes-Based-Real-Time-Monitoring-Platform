@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="CloudPulse — Kubernetes-Based Real-Time Monitoring Platform. Monitor server status, API health, pod information, CPU usage, and more." />
+  <meta name="keywords" content="monitoring, kubernetes, devops, cloud, dashboard, prometheus, grafana" />
+  <meta name="author" content="CloudPulse" />
+  <meta name="theme-color" content="#0f172a" />
+  
+  <title>CloudPulse — Real-Time Monitoring Dashboard</title>
+  
+  <!-- Google Fonts: Inter for clean, modern typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  
+  <!-- Tailwind CSS CDN v3 -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              200: '#c7d2fe',
+              300: '#a5b4fc',
+              400: '#818cf8',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              800: '#3730a3',
+              900: '#312e81',
+            },
+            surface: {
+              50: '#f8fafc',
+              100: '#f1f5f9',
+              200: '#e2e8f0',
+              700: '#1e293b',
+              800: '#0f172a',
+              900: '#020617',
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-surface-900 text-white font-sans antialiased">
+  <noscript>You need to enable JavaScript to run CloudPulse.</noscript>
+  <div id="root"></div>
+</body>
+</html>

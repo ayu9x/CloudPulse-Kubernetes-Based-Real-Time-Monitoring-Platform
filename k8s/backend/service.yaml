@@ -1,0 +1,30 @@
+# ============================================================
+# CloudPulse Backend — Service
+# ============================================================
+# A Service provides a stable network identity for a set of Pods.
+# Pods are ephemeral (they get new IPs when restarted), but a Service
+# always has the same IP and DNS name (cloudpulse-backend.cloudpulse.svc).
+#
+# ClusterIP: Only accessible within the cluster (default).
+# NodePort: Accessible from outside via NodeIP:NodePort.
+# LoadBalancer: Creates an external load balancer (costs $$$ on AWS).
+# ============================================================
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: cloudpulse-backend
+  namespace: cloudpulse
+  labels:
+    app: cloudpulse
+    component: backend
+spec:
+  type: ClusterIP
+  selector:
+    app: cloudpulse
+    component: backend
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+      protocol: TCP

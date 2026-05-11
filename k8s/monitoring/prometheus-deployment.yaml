@@ -1,0 +1,58 @@
+# ============================================================
+# Prometheus — Deployment
+# ============================================================
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus
+  namespace: cloudpulse
+  labels:
+    app: cloudpulse
+    component: prometheus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cloudpulse
+      component: prometheus
+  template:
+    metadata:
+      labels:
+        app: cloudpulse
+        component: prometheus
+    spec:
+      containers:
+        - name: prometheus
+          image: prom/prometheus:v2.50.1
+          ports:
+            - containerPort: 9090
+          args:
+            - '--config.file=/etc/prometheus/prometheus.yml'
+            - '--storage.tsdb.path=/prometheus'
+            - '--storage.tsdb.retention.time=3d'
+            - '--web.enable-lifecycle'
+          volumeMounts:
+            - name: config
+              mountPath: /etc/prometheus
+            - name: data
+              mountPath: /prometheus
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
+          readinessProbe:
+            httpGet:
+              path: /-/ready
+              port: 9090
+            initialDelaySeconds: 10
+            periodSeconds: 10
+      volumes:
+        - name: config
+          configMap:
+            name: prometheus-config
+        - name: data
+          emptyDir: {}

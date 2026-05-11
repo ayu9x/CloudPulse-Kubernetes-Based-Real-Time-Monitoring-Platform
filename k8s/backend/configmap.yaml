@@ -1,0 +1,20 @@
+# ============================================================
+# CloudPulse Backend — ConfigMap
+# ============================================================
+# A ConfigMap stores non-sensitive configuration data as key-value pairs.
+# Pods can consume ConfigMaps as environment variables or mounted files.
+# Use Secrets (not ConfigMap) for passwords, API keys, tokens.
+# ============================================================
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+  namespace: cloudpulse
+  labels:
+    app: cloudpulse
+    component: backend
+data:
+  NODE_ENV: "production"
+  PORT: "8080"
+  LOG_LEVEL: "info"

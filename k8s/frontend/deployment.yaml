@@ -1,0 +1,54 @@
+# ============================================================
+# CloudPulse Frontend — Deployment
+# ============================================================
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudpulse-frontend
+  namespace: cloudpulse
+  labels:
+    app: cloudpulse
+    component: frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: cloudpulse
+      component: frontend
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: cloudpulse
+        component: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: YOUR_DOCKERHUB_USERNAME/cloudpulse-frontend:latest
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          resources:
+            requests:
+              memory: "32Mi"
+              cpu: "25m"
+            limits:
+              memory: "64Mi"
+              cpu: "50m"
+          livenessProbe:
+            httpGet:
+              path: /nginx-health
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /nginx-health
+              port: 80
+            initialDelaySeconds: 3
+            periodSeconds: 10

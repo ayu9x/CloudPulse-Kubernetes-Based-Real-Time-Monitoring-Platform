@@ -1,0 +1,60 @@
+# ============================================================
+# Grafana — Deployment
+# ============================================================
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  namespace: cloudpulse
+  labels:
+    app: cloudpulse
+    component: grafana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cloudpulse
+      component: grafana
+  template:
+    metadata:
+      labels:
+        app: cloudpulse
+        component: grafana
+    spec:
+      containers:
+        - name: grafana
+          image: grafana/grafana:10.4.1
+          ports:
+            - containerPort: 3000
+          env:
+            - name: GF_SECURITY_ADMIN_USER
+              value: "admin"
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              value: "cloudpulse123"
+            - name: GF_USERS_ALLOW_SIGN_UP
+              value: "false"
+          volumeMounts:
+            - name: datasource
+              mountPath: /etc/grafana/provisioning/datasources
+            - name: data
+              mountPath: /var/lib/grafana
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+      volumes:
+        - name: datasource
+          configMap:
+            name: grafana-datasource
+        - name: data
+          emptyDir: {}
