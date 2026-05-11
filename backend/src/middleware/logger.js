@@ -6,6 +6,7 @@
 // ============================================================
 
 const winston = require('winston');
+const Transport = require('winston-transport');
 
 // ----- In-Memory Log Storage (Ring Buffer) -----
 // Stores the most recent logs for the dashboard.
@@ -15,15 +16,11 @@ const logBuffer = [];
 
 /**
  * Custom Winston transport that pushes logs into the ring buffer.
+ * Extends winston-transport (base class) instead of Stream transport.
  */
-class BufferTransport extends winston.transports.Stream {
+class BufferTransport extends Transport {
   constructor(opts) {
     super(opts);
-    this.stream = require('stream').Writable({
-      write: (chunk, encoding, callback) => {
-        callback();
-      }
-    });
   }
 
   log(info, callback) {
